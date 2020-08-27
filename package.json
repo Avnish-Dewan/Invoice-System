@@ -10,7 +10,15 @@
   },
   "keywords": [],
   "author": "",
+  "repositories": {
+    "type":"git",
+    "url":"git+https://github.com/Avnish-Dewan/Invoice-System.git"
+  },
   "license": "ISC",
+  "bugs":{
+    "url":"https://github.com/Avnish-Dewan/Invoice-System/issues"
+  },
+  "homepage": "https://github.com/Avnish-Dewan/Invoice-System#readme",
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
     "body-parser": "^1.18.3",

@@ -67,7 +67,7 @@ function sendInvoice(oneEmail, data) {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "avnishdewan99@gmail.com",
+      user: "invoice",
       pass: "java2003"
     }
   });
