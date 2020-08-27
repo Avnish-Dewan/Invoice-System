@@ -20,11 +20,13 @@ router.post("/", (req, res) => {
 
 // Find all invoices for client
 // View Client Form
-router.get("/search/:invoice_customer", (req, res) => {
+router.post("/search/:invoice_customer", (req, res) => {
+  console.log(req.params.invoice_customer);
   Invoice.find({
     invoice_customer: req.params.invoice_customer
   }).then(invoicecustomer => {
     res.render("invoice/search", {
+      name:req.params.invoice_customer,
       invoicecustomer: invoicecustomer
     });
   });
@@ -117,6 +119,12 @@ router.get("/delete/:id", (req, res) => {
     }
   });
 });
+
+
+// router.get("/search",(req,res)=>{
+//   res.render("/invoice/search");
+// });
+
 
 // View
 

@@ -1,8 +1,12 @@
-<form>
+<head>
+  <title> Search Customer's Invoice </title>
+</head>
+
+<form id = 'searchcustomer' method="POST">
   <div class="form-row">
       <div class="form-group col-md-12">
         <label for="invoice_customer">Select Client</label>
-         <select class="selectpicker" data-live-search="true" name="invoice_customer" id="invoice_customer">
+         <select id ="selectpicker" class="selectpicker" data-live-search="true" name="invoice_customer">
            {{#each customers}}
            <option>{{fullName}}</option>
            {{/each}}
@@ -10,5 +14,15 @@
 
 
       </div>
-  <button type="submit" class="btn btn-primary">Search</button>
+  <button type="submit" id = 'submit' class="btn btn-primary">Search</button>
 </form>
+
+<script>
+  var selectpicker = document.getElementById('selectpicker');
+  var button = document.getElementById('submit');
+  button.addEventListener("click",()=>{
+    console.log(encodeURI("/search/" + selectpicker.value));
+    document.getElementById('searchcustomer').action = encodeURI("/invoice/search/" + selectpicker.value);
+  });
+
+</script>
