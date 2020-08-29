@@ -48,7 +48,7 @@ function insertRecord(req, res) {
   invoice.notes = req.body.notes;
   invoice.amount = req.body.amount;
   invoice.owed = req.body.owed;
-  invoice.isPaid = req.body.isPaid;
+  invoice.isPaid = req.body.amount == req.body.owed ? "True" : "False";
   invoice.invoice_customer = req.body.invoice_customer;
   invoice.save((err, doc) => {
     if (!err) res.redirect("invoice/list");

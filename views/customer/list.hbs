@@ -1,6 +1,5 @@
 <title>Customer List</title>
-<h3><a class="btn btn-secondary" href="/customer"><i class="fa fa-plus"></i> Create New</a> Customers <a
-        class="btn btn-secondary float-right" href="/email/all"><i class="fa fa-envelope"></i> Send All Emails</a></h3>
+<h3>Customers</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -19,7 +18,7 @@
             <td>{{this.email}}</td>
             <td>{{this.mobile}}</td>
             <td>{{this.address}}</td>
-            <td><a href="/invoice/search/{{this.fullName}}" target="_blank">+</a></td>
+            <td><form method="POST" action="/invoice/search/{{this.fullName}}"><button class="btn btn-search" type="submit"><i class="fa fa-search fa-fw"></i></button></a></form></td>
             <td>
                 <a href="/customer/{{this._id}}"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></a>
                 <a href="/customer/delete/{{this._id}}"

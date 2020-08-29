@@ -18,11 +18,11 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             <label>Mobile</label>
-            <input type="text" class="form-control" name="mobile" placeholder="Mobile" value="{{customer.mobile}}">
+            <input pattern=".{10,10}" required title=" 10 characters" type="text" class="form-control" name="mobile" placeholder="Mobile" value="{{customer.mobile}}">
         </div>
         <div class="form-group col-md-6">
             <label>Address</label>
-            <input type="text" class="form-control" name="address" placeholder="Address" value="{{customer.address}}">
+            <input type="text" class="form-control" name="address" placeholder="Address" value="{{customer.address}}" required>
         </div>
     </div>
     <div class="form-group">

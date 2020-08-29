@@ -16,21 +16,35 @@ router.post("/", (req, res) => {
 });
 
 function insertRecord(req, res) {
-  var customer = new Customer();
-  customer.fullName = req.body.fullName;
-  customer.email = req.body.email;
-  customer.mobile = req.body.mobile;
-  customer.address = req.body.address;
-  customer.save((err, doc) => {
-    if (!err) res.redirect("customer/list");
-    else {
-      if (err.name == "ValidationError") {
-        handleValidationError(err, req.body);
-        res.render("customer/addOrEdit", {
-          viewTitle: "New Customer",
-          customer: req.body
-        });
-      } else console.log("Error during record insertion : " + err);
+  Customer.findOne({ email: req.body.email }).then(customer => {
+    console.log(customer);
+    if (!customer) {
+
+      Customer.findOne({ mobile: req.body.mobile }).then(customers => {
+        if (!customers) {
+          var customer = new Customer();
+          customer.fullName = req.body.fullName;
+          customer.email = req.body.email;
+          customer.mobile = req.body.mobile;
+          customer.address = req.body.address;
+          customer.save((err, doc) => {
+            if (!err) res.redirect("customer/list");
+            else {
+              if (err.name == "ValidationError") {
+                handleValidationError(err, req.body);
+                res.render("customer/addOrEdit", {
+                  viewTitle: "New Customer",
+                  customer: req.body
+                });
+              } else console.log("Error during record insertion : " + err);
+            }
+          });
+        } else {
+          res.status(400).send({ msg: "The Mobile is Already in use" });
+        }
+      });
+    } else {
+      res.status(400).send({ msg: "The Email is Already in use" });
     }
   });
 }
