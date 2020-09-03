@@ -50,7 +50,7 @@ router.get("/all", (req, res) => {
 //   });
 // });
 
-function sendInvoice(oneEmail, data) {
+function sendInvoice(oneEmail, data,customerName) {
   var nodemailer = require("nodemailer");
   var hbs = require("nodemailer-express-handlebars");
   var options = {
@@ -79,6 +79,7 @@ function sendInvoice(oneEmail, data) {
     subject: "Invoices",
     template: "email_body",
     context: {
+      name:customerName,
       data: data
     }
   });
@@ -108,14 +109,14 @@ router.get("/:email",(req,res)=>{
 
       // console.log(invoices+"....................................");
 
-      sendInvoice(req.params.email, invoices);
+      sendInvoice(req.params.email, invoices,customers[0].fullName);
     })
 
   });
 
-  res.render('email/email',{
-    email:req.params.email
-  })
+  // res.render('email/email',{
+  //   email:req.params.email
+  // })
 });
 
 module.exports = router;

@@ -2,6 +2,10 @@ const express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
 const Customer = mongoose.model("Customer");
+const User = mongoose.model("User");
+var JSAlert = require("js-alert");
+const otpGenerator = require("otp-generator");
+const nodemailer = require("nodemailer");
 const helpers = require("handlebars-helpers")();
 
 router.get("/", (req, res) => {
@@ -22,6 +26,49 @@ function insertRecord(req, res) {
 
       Customer.findOne({ mobile: req.body.mobile }).then(customers => {
         if (!customers) {
+          var password = otpGenerator.generate(8, { specialChars: false });
+          var user = new User();
+          user.email = req.body.email;
+          user.password = password;
+          user.role = "user";
+          user.verified = "false";
+          user.firstLogin = false;
+
+          console.log(password);
+
+          user.save((err,doc)=>{
+            if(!err){
+              JSAlert.alert("User Saved");
+            }else{
+              console.log(err);
+            }
+          });
+
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'invoicesys28@gmail.com',
+              pass: 'invoice12'
+            }
+          });
+
+
+          const mailOptions = {
+            from: 'invoicesys28@gmail.com',
+            to: req.body.email,
+            subject: 'Welcome to Invoice System',
+            text: 'Password for your account is ' + password
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+
           var customer = new Customer();
           customer.fullName = req.body.fullName;
           customer.email = req.body.email;
