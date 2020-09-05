@@ -54,7 +54,7 @@ router.get("/changepass",(req,res)=>{
 router.get("/success/:id",(req,res)=>{
 
 
-    Invoice.findById(id).then(invoice=>{
+    Invoice.findById(req.params.id).then(invoice=>{
 
             var myquery = {
                 _id: req.params.id
