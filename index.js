@@ -22,6 +22,9 @@ const userController = require("./controllers/userController");
 
 const middleware = require("./middlewares/login");
 const { log } = require("console");
+const stripe = require("stripe")('sk_test_51HNG88DpcbWR7u7oM7rYPd0bpoUKfv4lwsIqLKQfBqHUjqVyBY93wPGyRR4rtN8IGo6JbkWRDGcYx8YG2QKtHvy300diS0u9S6');
+
+
 
 const app = express();
 
@@ -176,6 +179,42 @@ app.post("/signin",(req,res)=>{
   });
 });
 
+app.get("/changepass",(req,res)=>{
+  if (req.session.role == 'admin') {
+    res.render('changepassword');
+  } else {
+    res.render('changepassword',{layout:'userLayout.hbs'});
+  }
+});
+
+app.post("/changepass",(req,res)=>{
+  console.log(req.session.email + "" +req.body.password );
+
+  var myquery = {
+    email : req.session.email
+  };
+  var newvalues = {
+    $set: {
+      password : req.body.password
+    }
+  };
+
+  User.updateOne(myquery,newvalues,(err,res)=>{
+    if(!err){
+      console.log("Password Changed");
+    }else{
+      console.log(err);
+    }
+  });
+
+  
+  if(req.session.role == 'admin'){
+    res.redirect("/dashboard");
+  }else{
+    res.redirect("/user");
+  }
+});
+
 
 app.use("/customer",middleware ,customerController);
 
@@ -189,4 +228,37 @@ app.get("/logout",(req,res)=>{
   req.session.isLogin = 0;
   console.log(req.session.role);
   res.redirect("/");
+});
+
+app.post("/create-checkout-session/:id", async (req, res) => {
+
+  console.log(req.params.id);
+
+  Invoice.findById(req.params.id).then(async (invoice)=>{
+    console.log(invoice);
+      var amount = (parseInt(invoice.amount) - parseInt(invoice.owed))*100;
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: invoice.item,
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        }, ],
+        mode: "payment",
+        success_url: "https://lop-invoice-system.herokuapp.com/user/success/"+req.params.id,
+        cancel_url: "https://lop-invoice-system.herokuapp.com/user/failure",
+      });
+
+        res.json({
+          id: session.id
+        });
+  }).catch(err=>{
+    console.log(err);
+  });
+
 });

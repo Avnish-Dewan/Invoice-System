@@ -6,6 +6,7 @@ const Invoice = mongoose.model("Invoice");
 const Customer = mongoose.model("Customer");
 const helpers = require("handlebars-helpers")();
 const middleware = require("../middlewares/login");
+const e = require("express");
 
 router.get("/",(req,res)=>{
     // console.log(email);
@@ -48,6 +49,36 @@ router.get("/all",(req,res)=>{
 
 router.get("/changepass",(req,res)=>{
     res.render("changepassword",{layout:"userLayout.hbs"});
+});
+
+router.get("/success/:id",(req,res)=>{
+
+
+    Invoice.findById(id).then(invoice=>{
+
+            var myquery = {
+                _id: req.params.id
+             };
+             var newvalues = {
+                $set: {
+                    isPaid: "True",
+                    owed:invoice.amount
+                }
+            };
+
+        Invoice.updateOne(myquery,newvalues,(err,docs)=>{
+            if(!err){
+                res.render("success",{layout:"userLayout.hbs"});
+            }else{
+                console.log(err);
+            }
+        })
+    });
+
+});
+
+router.get("/failure",(req,res)=>{
+    res.render("failure",{layout:"userLayout.hbs"});
 });
 
 module.exports = router;
