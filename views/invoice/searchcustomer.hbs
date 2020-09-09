@@ -2,25 +2,25 @@
   <title> Search Customer's Invoice </title>
 </head>
 
-<form id = 'searchcustomer' method="POST">
+<form id='searchcustomer' method="POST">
   <div class="form-row">
-      <div class="form-group col-md-12">
-        <label for="invoice_customer">Select Client</label>
-         <select id ="selectpicker" class="selectpicker" data-live-search="true" name="invoice_customer">
-           {{#each customers}}
-           <option>{{fullName}}</option>
-           {{/each}}
-         </select>
+    <div class="form-group col-md-12">
+      <label for="invoice_customer">Select Client</label>
+      <select id="selectpicker" class="selectpicker" data-live-search="true" name="invoice_customer">
+        {{#each customers}}
+        <option>{{email}}</option>
+        {{/each}}
+      </select>
 
 
-      </div>
-  <button type="submit" id = 'submit' class="btn btn-primary">Search</button>
+    </div>
+    <button type="submit" id='submit' class="btn btn-primary">Search</button>
 </form>
 
 <script>
   var selectpicker = document.getElementById('selectpicker');
   var button = document.getElementById('submit');
-  button.addEventListener("click",()=>{
+  button.addEventListener("click", () => {
     console.log(encodeURI("/search/" + selectpicker.value));
     document.getElementById('searchcustomer').action = encodeURI("/invoice/search/" + selectpicker.value);
   });
