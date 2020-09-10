@@ -185,20 +185,6 @@ app.post("/signin", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-app.get("/changepass",(req,res)=>{
-
-  User.findOne({email:req.session.email}).then(user=>{
-
-    if (req.session.role == 'admin') {
-      res.render('changepassword',{
-        password:user.password
-      });
-    } else {
-      res.render('changepassword', {
-        password:user.password, 
-        layout: 'userLayout.hbs' 
-=======
 app.get("/changepass", (req, res) => {
 
   User.findOne({ email: req.session.email }).then(user => {
@@ -211,7 +197,6 @@ app.get("/changepass", (req, res) => {
       res.render('changepassword', {
         password: user.password,
         layout: 'userLayout.hbs'
->>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
       });
     }
   });
@@ -220,13 +205,8 @@ app.get("/changepass", (req, res) => {
 });
 
 
-<<<<<<< HEAD
-app.post("/changepass",(req,res)=>{
-  console.log(req.session.email + "" +req.body.password );
-=======
 app.post("/changepass", (req, res) => {
   console.log(req.session.email + "" + req.body.password);
->>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
 
   var myquery = {
     email: req.session.email
@@ -268,11 +248,7 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-<<<<<<< HEAD
-app.post("/create-checkout-session/:id", middleware , async (req, res) => {
-=======
 app.post("/create-checkout-session/:id", middleware, async (req, res) => {
->>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
 
   console.log(req.params.id);
 
