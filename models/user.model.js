@@ -8,11 +8,15 @@ var userSchema = new mongoose.Schema({
         type: String
     },
     verified: {
-        type : String
+        type: String
     },
-    role:{
-        type:String
+    role: {
+        type: String
     },
+    firstLogin: {
+        type: Boolean
+    },
+<<<<<<< HEAD
     firstLogin:{
         type:Boolean
     },
@@ -21,6 +25,13 @@ var userSchema = new mongoose.Schema({
     },
     resetLink : {
         type:String
+=======
+    isLinkValid: {
+        type: Boolean
+    },
+    resetLink: {
+        type: String
+>>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
     }
 });
 

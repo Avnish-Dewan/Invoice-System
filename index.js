@@ -9,7 +9,7 @@ const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-const url = require('url'); 
+const url = require('url');
 
 const mongoose = require("mongoose");
 const Invoice = mongoose.model("Invoice");
@@ -67,12 +67,12 @@ app.use(express.static("public"));
 //   }
 // }));
 
-app.use(session({ 
+app.use(session({
   secret: "xYUCAchitkaraa",
   saveUninitialized: true,
   resave: true,
-  cookie: { 
-    expires: 3600000 
+  cookie: {
+    expires: 3600000
   }
 }));
 
@@ -81,8 +81,8 @@ app.use(session({
 // app.use(middleware);
 
 
-app.get("/dashboard", middleware , async (req, res) => {
-  if(req.session.role == 'admin'){
+app.get("/dashboard", middleware, async (req, res) => {
+  if (req.session.role == 'admin') {
     let list = [];
     list.result = await Invoice.countDocuments({ isPaid: "False" });
     list.result2 = await Invoice.countDocuments({ isPaid: "True" });
@@ -90,10 +90,10 @@ app.get("/dashboard", middleware , async (req, res) => {
     list.result4 = await Customer.countDocuments({});
     list.result5 = await Invoice.find({ isPaid: "False" });
     res.render("dashboard", list);
-  }else{
-    res.render("error",{
-      msg:"Not Authorized",
-      redirect:"/user"
+  } else {
+    res.render("error", {
+      msg: "Not Authorized",
+      redirect: "/user"
     })
   }
 });
@@ -107,21 +107,21 @@ app.get('/', function (req, res) {
   // res.send("Hi");
   console.log(req.session);
   if (req.session.isLogin == 1) {
-    if(req.session.role == 'admin'){
+    if (req.session.role == 'admin') {
       res.redirect("/dashboard");
-    }else{
+    } else {
       res.redirect("/user");
     }
-  }else{
-    res.sendFile(__dirname+"/public/index1223.html");
+  } else {
+    res.sendFile(__dirname + "/public/index1223.html");
   }
 });
 
-app.post("/login",(req,res)=>{
+app.post("/login", (req, res) => {
 
-  User.findOne({email:req.body.email}).then(user=>{
-    if(user){
-      if(user.password == req.body.password){
+  User.findOne({ email: req.body.email }).then(user => {
+    if (user) {
+      if (user.password == req.body.password) {
 
         req.session.isLogin = 1;
         req.session.id = user._id;
@@ -131,37 +131,37 @@ app.post("/login",(req,res)=>{
 
         console.log("Session Created");
 
-        if(req.session.role == "admin"){
+        if (req.session.role == "admin") {
           res.redirect("/dashboard");
-        }else{
-        res.redirect(url.format({
-          pathname : "/user",
-          query : {  
-            "email":req.body.email
-          }
-        }));
-      }
-      }else{
+        } else {
+          res.redirect(url.format({
+            pathname: "/user",
+            query: {
+              "email": req.body.email
+            }
+          }));
+        }
+      } else {
         res.render("error", {
           msg: "Password or email Incorrect",
-          redirect:"/"
+          redirect: "/"
         })
       }
-    }else{
-      res.render("error",{
+    } else {
+      res.render("error", {
         msg: "User with specified email doesn't exist",
-        redirect:"/"
+        redirect: "/"
       });
     }
   }
   );
 });
 
-app.post("/signin",(req,res)=>{
+app.post("/signin", (req, res) => {
 
-  User.findOne({email:req.body.email}).then(users=>{
+  User.findOne({ email: req.body.email }).then(users => {
 
-    if(!users){
+    if (!users) {
       var user = new User();
       user.email = req.body.email;
       user.password = req.body.password;
@@ -177,14 +177,15 @@ app.post("/signin",(req,res)=>{
         }
 
       });
-    }else{
-      res.render("error",{
-        msg:"Email already exists"
+    } else {
+      res.render("error", {
+        msg: "Email already exists"
       });
     }
   });
 });
 
+<<<<<<< HEAD
 app.get("/changepass",(req,res)=>{
 
   User.findOne({email:req.session.email}).then(user=>{
@@ -197,6 +198,20 @@ app.get("/changepass",(req,res)=>{
       res.render('changepassword', {
         password:user.password, 
         layout: 'userLayout.hbs' 
+=======
+app.get("/changepass", (req, res) => {
+
+  User.findOne({ email: req.session.email }).then(user => {
+
+    if (req.session.role == 'admin') {
+      res.render('changepassword', {
+        password: user.password
+      });
+    } else {
+      res.render('changepassword', {
+        password: user.password,
+        layout: 'userLayout.hbs'
+>>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
       });
     }
   });
@@ -205,79 +220,247 @@ app.get("/changepass",(req,res)=>{
 });
 
 
+<<<<<<< HEAD
 app.post("/changepass",(req,res)=>{
   console.log(req.session.email + "" +req.body.password );
+=======
+app.post("/changepass", (req, res) => {
+  console.log(req.session.email + "" + req.body.password);
+>>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
 
   var myquery = {
-    email : req.session.email
+    email: req.session.email
   };
   var newvalues = {
     $set: {
-      password : req.body.password
+      password: req.body.password
     }
   };
 
-  User.updateOne(myquery,newvalues,(err,res)=>{
-    if(!err){
+  User.updateOne(myquery, newvalues, (err, res) => {
+    if (!err) {
       console.log("Password Changed");
-    }else{
+    } else {
       console.log(err);
     }
   });
 
-  
-  if(req.session.role == 'admin'){
+
+  if (req.session.role == 'admin') {
     res.redirect("/dashboard");
-  }else{
+  } else {
     res.redirect("/user");
   }
 });
 
 
-app.use("/customer",middleware ,customerController);
+app.use("/customer", middleware, customerController);
 
-app.use("/invoice", middleware ,invoiceController);
+app.use("/invoice", middleware, invoiceController);
 
-app.use("/email", middleware ,emailController);
+app.use("/email", middleware, emailController);
 
-app.use("/user",userController);
+app.use("/user", userController);
 
-app.get("/logout",(req,res)=>{
+app.get("/logout", (req, res) => {
   req.session.isLogin = 0;
   console.log(req.session.role);
   res.redirect("/");
 });
 
+<<<<<<< HEAD
 app.post("/create-checkout-session/:id", middleware , async (req, res) => {
+=======
+app.post("/create-checkout-session/:id", middleware, async (req, res) => {
+>>>>>>> 63580b4dea250b425d7679d086493e434d97ff57
 
   console.log(req.params.id);
 
-  Invoice.findById(req.params.id).then(async (invoice)=>{
+  Invoice.findById(req.params.id).then(async (invoice) => {
     console.log(invoice);
-      var amount = (parseInt(invoice.amount) - parseInt(invoice.owed))*100;
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: invoice.item,
-            },
-            unit_amount: amount,
+    var amount = (parseInt(invoice.amount) - parseInt(invoice.owed)) * 100;
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [{
+        price_data: {
+          currency: "inr",
+          product_data: {
+            name: invoice.item,
           },
-          quantity: 1,
-        }, ],
-        mode: "payment",
-        success_url: "https://lop-invoice-system.herokuapp.com/user/success/"+req.params.id,
-        cancel_url: "https://lop-invoice-system.herokuapp.com/user/failure",
-      });
+          unit_amount: amount,
+        },
+        quantity: 1,
+      },],
+      mode: "payment",
+      success_url: "https://lop-invoice-system.herokuapp.com/user/success/" + req.params.id,
+      cancel_url: "https://lop-invoice-system.herokuapp.com/user/failure",
+    });
 
-        res.json({
-          id: session.id
-        });
-  }).catch(err=>{
+    res.json({
+      id: session.id
+    });
+  }).catch(err => {
     console.log(err);
   });
+
+});
+
+app.get("/forgotpass", (req, res) => {
+  res.sendFile(__dirname + "/public/forgot.html");
+});
+
+
+app.get("/reset/:id", (req, res) => {
+
+  User.findOne({
+    resetLink: req.params.id
+  }).then(user => {
+    if (user) {
+      if (user.isLinkValid) {
+        res.render("reset", {
+          link: user.resetLink,
+          layout: ""
+        });
+      } else {
+        res.render("error", {
+          msg: "Link not valid",
+          redirect: "/",
+          layout: ""
+        })
+      }
+    } else {
+      console.log(req.params.id);
+    }
+  })
+});
+
+app.post("/reset/:id", (req, res) => {
+
+  var myquery = {
+    resetLink: req.params.id
+  };
+  var newvalues = {
+    $set: {
+      password: req.body.password,
+      resetLink: "",
+      isLinkValid: false
+    }
+  };
+  User.updateOne(myquery, newvalues, (err, doc) => {
+    if (err) {
+      throw err;
+    } else {
+      res.render("error", {
+        msg: "Password Updated Successfully",
+        redirect: "/",
+        layout: ""
+      })
+    }
+  });
+});
+
+
+app.post("/forgotpass", (req, res) => {
+
+  // console.log(req.body.email);
+  User.findOne({ email: req.body.email }).then(user => {
+    if (user) {
+
+      var query = {
+        email: req.body.email
+      };
+
+      var newvalues = {
+        $set: {
+          isLinkValid: true
+        }
+      };
+
+      User.updateOne(query, newvalues, (err, docs) => {
+        if (!err) {
+          console.log("User Updated");
+        } else {
+          throw err;
+        }
+      })
+
+      setTimeout(() => {
+        newvalues = {
+          $set: {
+            isLinkValid: false,
+            resetLink: ""
+          }
+        };
+        User.updateOne(query, newvalues, (err, docs) => {
+          if (!err) {
+            console.log("User Updated after 15 seconds");
+          } else {
+            throw err;
+          }
+        })
+      }, 600000);
+
+      crypto.randomBytes(32, (err, buf) => {
+        if (err) throw err;
+        newvalues = {
+          $set: {
+            resetLink: buf.toString('hex')
+          }
+        };
+
+        User.updateOne(query, newvalues, (err, docs) => {
+          if (err) {
+            throw err;
+          } else {
+            // buf.toString('hex')
+
+            const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: 'invoicesys28@gmail.com',
+                pass: 'invoice12'
+              }
+            });
+            const link = "http://localhost:5000/reset/" + buf.toString('hex');
+            // const link = "https://lop-invoice-system.herokuapp.com/reset/"+buf.toString('hex');
+
+            const mailOptions = {
+              from: 'invoicesys28@gmail.com',
+              to: req.body.email,
+              subject: 'Reset Link for your to account ',
+              text: 'Reset Link for your account is ' + link
+            };
+
+            transporter.sendMail(mailOptions, function (error, info) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+                res.render("error", {
+                  msg: "Check your mail for further instructions",
+                  redirect: "/",
+                  layout: ""
+                })
+              }
+            });
+
+          }
+        });
+
+        console.log(buf.length + ' bytes of random data: ' + buf.toString('hex'));
+
+
+      });
+
+
+    } else {
+      res.render("error", {
+        msg: "Email doesn't exist",
+        redirect: "/",
+        layout: ""
+      });
+    }
+  })
 
 });
 
