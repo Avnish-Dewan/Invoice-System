@@ -105,11 +105,10 @@ router.get("/:email",(req,res)=>{
   console.log(req.params.email)
   Customer.find({email:req.params.email}).then(customers=>{
     console.log("Hello................................................................" + customers[0].email);
-    Invoice.find({invoice_customer:customers[0].fullName}).then(invoices=>{
-
-      // console.log(invoices+"....................................");
-
+    Invoice.find({invoice_customer:customers[0].email}).then(invoices=>{
       sendInvoice(req.params.email, invoices,customers[0].fullName);
+      res.redirect("/invoice/list");
+
     })
 
   });
