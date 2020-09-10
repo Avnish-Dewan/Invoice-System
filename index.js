@@ -5,7 +5,8 @@ const router = express.Router();
 const path = require("path");
 const exphbs = require("express-handlebars");
 const bodyparser = require("body-parser");
-
+const nodemailer = require("nodemailer");
+const otpGenerator = require("otp-generator");
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 const url = require('url'); 
@@ -22,7 +23,12 @@ const userController = require("./controllers/userController");
 
 const middleware = require("./middlewares/login");
 const { log } = require("console");
+const { raw } = require("body-parser");
 const stripe = require("stripe")('sk_test_51HNG88DpcbWR7u7oM7rYPd0bpoUKfv4lwsIqLKQfBqHUjqVyBY93wPGyRR4rtN8IGo6JbkWRDGcYx8YG2QKtHvy300diS0u9S6');
+
+
+const crypto = require('crypto');
+
 
 
 
@@ -180,12 +186,24 @@ app.post("/signin",(req,res)=>{
 });
 
 app.get("/changepass",(req,res)=>{
-  if (req.session.role == 'admin') {
-    res.render('changepassword');
-  } else {
-    res.render('changepassword',{layout:'userLayout.hbs'});
-  }
+
+  User.findOne({email:req.session.email}).then(user=>{
+
+    if (req.session.role == 'admin') {
+      res.render('changepassword',{
+        password:user.password
+      });
+    } else {
+      res.render('changepassword', {
+        password:user.password, 
+        layout: 'userLayout.hbs' 
+      });
+    }
+  });
+
+
 });
+
 
 app.post("/changepass",(req,res)=>{
   console.log(req.session.email + "" +req.body.password );
@@ -230,7 +248,7 @@ app.get("/logout",(req,res)=>{
   res.redirect("/");
 });
 
-app.post("/create-checkout-session/:id", async (req, res) => {
+app.post("/create-checkout-session/:id", middleware , async (req, res) => {
 
   console.log(req.params.id);
 
@@ -260,5 +278,163 @@ app.post("/create-checkout-session/:id", async (req, res) => {
   }).catch(err=>{
     console.log(err);
   });
+
+});
+
+app.get("/forgotpass",(req,res)=>{
+  res.sendFile(__dirname+"/public/forgot.html");
+});
+
+
+app.get("/reset/:id",(req,res)=>{
+
+  User.findOne({
+    resetLink : req.params.id
+  }).then(user => {
+    if (user) {
+      if (user.isLinkValid) {
+          res.render("reset",{
+            link:user.resetLink,
+            layout:""
+          });
+      } else {
+        res.render("error", {
+          msg: "Link not valid",
+          redirect: "/",
+          layout: ""
+        })
+      }
+    } else {
+      console.log(req.params.id);
+    }
+  })
+});
+
+app.post("/reset/:id",(req,res)=>{
+
+  var myquery = {
+    resetLink : req.params.id
+  };
+  var newvalues = {
+    $set: {
+      password: req.body.password,
+      resetLink : "",
+      isLinkValid : false
+    }
+  };
+  User.updateOne(myquery,newvalues,(err,doc)=>{
+    if(err){
+      throw err;
+    }else{
+      res.render("error",{
+        msg:"Password Updated Successfully",
+        redirect:"/",
+        layout:""
+      })
+    }
+  });
+});
+
+
+app.post("/forgotpass",(req,res)=>{  
+
+  // console.log(req.body.email);
+  User.findOne({email:req.body.email}).then(user=>{
+    if(user){
+
+      var query = {
+        email: req.body.email
+      };
+
+      var newvalues = {
+        $set: {
+          isLinkValid: true
+        }
+      };
+
+      User.updateOne(query,newvalues,(err,docs)=>{
+        if(!err){
+          console.log("User Updated");
+        }else{
+          throw err;
+        }
+      })
+
+      setTimeout(() => {
+        newvalues = {
+          $set: {
+            isLinkValid: false,
+            resetLink:""
+          }
+        };
+        User.updateOne(query, newvalues, (err, docs) => {
+          if (!err) {
+            console.log("User Updated after 15 seconds");
+          } else {
+            throw err;
+          }
+        })
+      }, 600000);
+
+      crypto.randomBytes(32, (err, buf) => {
+        if (err) throw err;
+        newvalues = {
+          $set: {
+            resetLink:buf.toString('hex')
+          }
+        };
+
+        User.updateOne(query,newvalues,(err,docs)=>{
+          if(err){
+            throw err;
+          }else{
+            // buf.toString('hex')
+
+            const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                user: 'invoicesys28@gmail.com',
+                pass: 'invoice12'
+              }
+            });
+            const link = "https://lop-invoice-system.herokuapp.com/reset/"+buf.toString('hex');
+
+            const mailOptions = {
+              from: 'invoicesys28@gmail.com',
+              to: req.body.email,
+              subject: 'Reset Link for your to account ',
+              text: 'Reset Link for your account is ' +  link 
+            };
+
+            transporter.sendMail(mailOptions, function (error, info) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+                res.render("error",{
+                  msg:"Check your mail for further instructions",
+                  redirect:"/",
+                  layout:""
+                })
+              }
+            });
+
+          }
+        });
+
+        console.log(buf.length + ' bytes of random data: ' + buf.toString('hex'));
+        
+
+      });
+
+
+    }else{
+      res.render("error",{
+        msg:"Email doesn't exist",
+        redirect:"/",
+        layout:""
+      });
+    }
+  })
 
 });

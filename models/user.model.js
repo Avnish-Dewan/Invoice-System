@@ -15,6 +15,12 @@ var userSchema = new mongoose.Schema({
     },
     firstLogin:{
         type:Boolean
+    },
+    isLinkValid:{
+        type:Boolean
+    },
+    resetLink : {
+        type:String
     }
 });
 

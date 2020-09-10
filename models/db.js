@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-// const pass = require("../keys.js");
 
 mongoose.connect('mongodb+srv://admin:admin@cluster0.bp37d.mongodb.net/InvoiceSystem?retryWrites=true&w=majority', {
       useNewUrlParser: true
