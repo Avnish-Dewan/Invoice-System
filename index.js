@@ -336,109 +336,7 @@ app.post("/reset/:id", (req, res) => {
 });
 
 
-app.post("/forgotpass", (req, res) => {
 
-  // console.log(req.body.email);
-  User.findOne({ email: req.body.email }).then(user => {
-    if (user) {
-
-      var query = {
-        email: req.body.email
-      };
-
-      var newvalues = {
-        $set: {
-          isLinkValid: true
-        }
-      };
-
-      User.updateOne(query, newvalues, (err, docs) => {
-        if (!err) {
-          console.log("User Updated");
-        } else {
-          throw err;
-        }
-      })
-
-      setTimeout(() => {
-        newvalues = {
-          $set: {
-            isLinkValid: false,
-            resetLink: ""
-          }
-        };
-        User.updateOne(query, newvalues, (err, docs) => {
-          if (!err) {
-            console.log("User Updated after 15 seconds");
-          } else {
-            throw err;
-          }
-        })
-      }, 600000);
-
-      crypto.randomBytes(32, (err, buf) => {
-        if (err) throw err;
-        newvalues = {
-          $set: {
-            resetLink: buf.toString('hex')
-          }
-        };
-
-        User.updateOne(query, newvalues, (err, docs) => {
-          if (err) {
-            throw err;
-          } else {
-            // buf.toString('hex')
-
-            const transporter = nodemailer.createTransport({
-              service: 'gmail',
-              auth: {
-                user: 'invoicesys28@gmail.com',
-                pass: 'invoice12'
-              }
-            });
-            const link = "http://localhost:5000/reset/" + buf.toString('hex');
-            // const link = "https://lop-invoice-system.herokuapp.com/reset/"+buf.toString('hex');
-
-            const mailOptions = {
-              from: 'invoicesys28@gmail.com',
-              to: req.body.email,
-              subject: 'Reset Link for your to account ',
-              text: 'Reset Link for your account is ' + link
-            };
-
-            transporter.sendMail(mailOptions, function (error, info) {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log('Email sent: ' + info.response);
-                res.render("error", {
-                  msg: "Check your mail for further instructions",
-                  redirect: "/",
-                  layout: ""
-                })
-              }
-            });
-
-          }
-        });
-
-        console.log(buf.length + ' bytes of random data: ' + buf.toString('hex'));
-
-
-      });
-
-
-    } else {
-      res.render("error", {
-        msg: "Email doesn't exist",
-        redirect: "/",
-        layout: ""
-      });
-    }
-  })
-
-});
 
 app.get("/forgotpass",(req,res)=>{
   res.sendFile(__dirname+"/public/forgot.html");
@@ -556,13 +454,14 @@ app.post("/forgotpass",(req,res)=>{
                 pass: 'invoice12'
               }
             });
+
             const link = "https://lop-invoice-system.herokuapp.com/reset/"+buf.toString('hex');
 
             const mailOptions = {
               from: 'invoicesys28@gmail.com',
               to: req.body.email,
               subject: 'Reset Link for your to account ',
-              text: 'Reset Link for your account is ' +  link 
+              text: 'Reset Link for your account is ' +  link
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
