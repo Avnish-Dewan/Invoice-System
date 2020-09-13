@@ -8,7 +8,7 @@
       <label for="invoice_customer">Select Client</label>
       <select id="selectpicker" class="selectpicker" data-live-search="true" name="invoice_customer">
         {{#each customers}}
-        <option>{{email}}</option>
+        <option>{{fullName}}({{email}})</option>
         {{/each}}
       </select>
 
@@ -21,8 +21,17 @@
   var selectpicker = document.getElementById('selectpicker');
   var button = document.getElementById('submit');
   button.addEventListener("click", () => {
-    console.log(encodeURI("/search/" + selectpicker.value));
-    document.getElementById('searchcustomer').action = encodeURI("/invoice/search/" + selectpicker.value);
+    var value = selectpicker.value;
+
+    var start = value.indexOf("(");
+    var end = value.indexOf(")");
+
+    value = value.substr(start+1,end-start-1);
+
+    console.log(value);
+
+    console.log(encodeURI("/search/" + value));
+    document.getElementById('searchcustomer').action = encodeURI("/invoice/search/" + value);
   });
 
 </script>

@@ -18,7 +18,7 @@
             <td>{{this.email}}</td>
             <td>{{this.mobile}}</td>
             <td>{{this.address}}</td>
-            <td><form method="POST" action="/invoice/search/{{this.fullName}}"><button class="btn btn-search" type="submit"><i class="fa fa-search fa-fw"></i></button></a></form></td>
+            <td><form method="POST" action="/invoice/search/{{this.email}}"><button class="btn btn-search" type="submit"><i class="fa fa-search fa-fw"></i></button></a></form></td>
             <td>
                 <a href="/customer/{{this._id}}"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></a>
                 <a href="/customer/delete/{{this._id}}"

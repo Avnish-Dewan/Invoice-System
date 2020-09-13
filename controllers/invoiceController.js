@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 mongoose.set('useFindAndModify', false);
 const Invoice = mongoose.model("Invoice");
 const Customer = mongoose.model("Customer");
+const User = mongoose.model("User");
 const helpers = require("handlebars-helpers")();
 
 router.get("/", (req, res) => {
@@ -24,13 +25,15 @@ router.post("/", (req, res) => {
 // View Client Form
 router.post("/search/:invoice_customer", (req, res) => {
   console.log(req.params.invoice_customer);
-  Invoice.find({
-    invoice_customer: req.params.invoice_customer
-  }).then(invoicecustomer => {
-    res.render("invoice/search", {
-      name:req.params.invoice_customer,
-      invoicecustomer: invoicecustomer
-    });
+  Customer.findOne({email:req.params.invoice_customer}).then(customer=>{
+      Invoice.find({
+        invoice_customer: req.params.invoice_customer
+      }).then(invoicecustomer => {
+        res.render("invoice/search", {
+          name: customer.fullName,
+          invoicecustomer: invoicecustomer
+        });
+      });
   });
 });
 
@@ -54,8 +57,8 @@ function insertRecord(req, res) {
       invoice.item = req.body.item;
       invoice.date = req.body.date;
       invoice.notes = req.body.notes;
-      invoice.amount = req.body.amount;
-      invoice.owed = req.body.owed;
+      invoice.amount = req.body.amount || "0";
+      invoice.owed = req.body.owed || "0";
       invoice.isPaid = req.body.amount == req.body.owed ? "True" : "False";
       // invoice.invoice_customer = req.body.invoice_customer;
       invoice.save((err, doc) => {
