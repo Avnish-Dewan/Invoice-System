@@ -168,6 +168,16 @@ router.get("/:id", (req, res) => {
 });
 
 router.get("/delete/:id", (req, res) => {
+
+  Customer.findById(req.params.id,(err,doc)=>{
+    console.log(req.params.id + " " + doc+ " " + err);
+    User.findOneAndDelete({email:doc.email},(err, doc) => {
+      if(err){
+        throw err;
+      }
+    });
+  });
+
   Customer.findByIdAndDelete(req.params.id, (err, doc) => {
     if (!err) {
       res.redirect("/customer/list");

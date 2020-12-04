@@ -104,7 +104,6 @@ app.listen(port, () => {
 });
 
 app.get('/', function (req, res) {
-  // res.send("Hi");
   console.log(req.session);
   if (req.session.isLogin == 1) {
     if (req.session.role == 'admin') {
