@@ -26,6 +26,7 @@ const { log } = require("console");
 const { raw } = require("body-parser");
 const stripe = require("stripe")('sk_test_51HNG88DpcbWR7u7oM7rYPd0bpoUKfv4lwsIqLKQfBqHUjqVyBY93wPGyRR4rtN8IGo6JbkWRDGcYx8YG2QKtHvy300diS0u9S6');
 
+const validator = require("./middlewares/validator");
 
 const crypto = require('crypto');
 
@@ -233,11 +234,11 @@ app.post("/changepass", (req, res) => {
 });
 
 
-app.use("/customer", middleware, customerController);
+app.use("/customer", middleware,validator, customerController);
 
-app.use("/invoice", middleware, invoiceController);
+app.use("/invoice", middleware,validator, invoiceController);
 
-app.use("/email", middleware, emailController);
+app.use("/email", middleware,validator ,emailController);
 
 app.use("/user", userController);
 

@@ -65,6 +65,9 @@ function sendInvoice(oneEmail, data,customerName) {
   };
 
   var transporter = nodemailer.createTransport({
+    host:"smtp.gmail.com",
+    secure:"true",
+    port:465,
     service: "gmail",
     auth: {
       user: "invoicesys28@gmail.com",
